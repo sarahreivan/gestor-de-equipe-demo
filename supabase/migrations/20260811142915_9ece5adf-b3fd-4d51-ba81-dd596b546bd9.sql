@@ -1,0 +1,1 @@
+ALTER TABLE public.estagios ADD COLUMN IF NOT EXISTS modalidade text;

@@ -1,0 +1,282 @@
+{
+  "name": "atualizacao-sistema-demo",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Fluxo de demonstração\nRenovação de estágio: lê os registros no Supabase, verifica a data de aviso e cria um novo processo.\n\nAs etapas do sistema externo de processos (autenticação, criação de processo e de documento) são **simuladas** com dados fictícios.",
+        "height": 220,
+        "width": 436,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-576, -192],
+      "id": "22bc5ffb-d562-43e7-9dca-ee07597adc2d",
+      "name": "Nota"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "processos",
+        "filters": {
+          "conditions": []
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [-128, 240],
+      "id": "a2253275-3141-484b-8977-918cf4333483",
+      "name": "Buscar processos (Supabase)",
+      "credentials": {
+        "supabaseApi": {
+          "id": "SELECIONE-A-CREDENCIAL",
+          "name": "Supabase (demo)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b2000000-0000-4000-8000-000000000002",
+              "name": "aviso",
+              "value": "=Renovação de estágio - {{ $json.nome }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [512, 16],
+      "id": "d0f8b5e7-f410-4b12-8498-dbd382ae575d",
+      "name": "Aviso de renovação (simulado)"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b2000000-0000-4000-8000-000000000003",
+              "name": "Token",
+              "value": "token-demo",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [800, 16],
+      "id": "816bdefe-09e4-4f5d-98fd-2394bf404424",
+      "name": "Autenticação (simulada)"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b2000000-0000-4000-8000-000000000004",
+              "name": "ProcedimentoFormatado",
+              "value": "={{ '00000.000' + (Math.floor(Math.random() * 900) + 100) + '/2026-11' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [1088, 16],
+      "id": "e4ed301e-8563-4dd9-9f5a-115c1286f041",
+      "name": "Gerar processo (simulado)"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b2000000-0000-4000-8000-000000000005",
+              "name": "conteudoHTML",
+              "value": "=<p>Memorando de renovação de estágio - {{ $json.nome }} (demonstração)</p>",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {
+          "dotNotation": false
+        }
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [1392, 16],
+      "id": "ebe67580-3ccf-4431-b577-e675c5c7aa6f",
+      "name": "Montar memorando"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b2000000-0000-4000-8000-000000000006",
+              "name": "DocumentoFormatado",
+              "value": "={{ 'DOC-DEMO-' + (Math.floor(Math.random() * 9000) + 1000) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [1664, 16],
+      "id": "7c06f139-b0d0-482c-b762-f0c20269b195",
+      "name": "Gerar documento (simulado)"
+    },
+    {
+      "parameters": {
+        "tableId": "processos",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "pessoa_id",
+              "fieldValue": "={{ $json.pessoa_id }}"
+            },
+            {
+              "fieldId": "estagio_id",
+              "fieldValue": "={{ $json.estagio_id }}"
+            },
+            {
+              "fieldId": "tipo_processo",
+              "fieldValue": "RENOVACAO"
+            },
+            {
+              "fieldId": "renovacoes",
+              "fieldValue": "={{ Number($json.renovacoes) + 1 }}"
+            },
+            {
+              "fieldId": "data_solicitacao",
+              "fieldValue": "={{ $now.toFormat('yyyy-MM-dd') }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "pendente"
+            },
+            {
+              "fieldId": "sei_protocolo",
+              "fieldValue": "={{ $json.ProcedimentoFormatado }}"
+            },
+            {
+              "fieldId": "observacoes",
+              "fieldValue": "={{ Number($json.renovacoes) + 1 }}° Renovação"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [1936, 16],
+      "id": "3aeea723-10f9-418d-9cf1-2fa77544007d",
+      "name": "Registrar processo no Supabase",
+      "credentials": {
+        "supabaseApi": {
+          "id": "SELECIONE-A-CREDENCIAL",
+          "name": "Supabase (demo)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [-512, 80],
+      "id": "0136261f-bf57-4231-8f1a-26690fa0bc50",
+      "name": "Schedule Trigger1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b2000000-0000-4000-8000-000000000001",
+              "leftValue": "={{ $json.data_aviso }}",
+              "rightValue": "={{ $now.toFormat('yyyy-MM-dd') }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [192, 240],
+      "id": "d22e6bd1-844d-407f-8af1-ec94ec8824a9",
+      "name": "If1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [496, 416],
+      "id": "ed9fbeae-a289-40dc-ada8-d69fde1b67dd",
+      "name": "No Operation, do nothing1"
+    }
+  ],
+  "connections": {
+    "Buscar processos (Supabase)": {
+      "main": [[{ "node": "If1", "type": "main", "index": 0 }]]
+    },
+    "Aviso de renovação (simulado)": {
+      "main": [[{ "node": "Autenticação (simulada)", "type": "main", "index": 0 }]]
+    },
+    "Autenticação (simulada)": {
+      "main": [[{ "node": "Gerar processo (simulado)", "type": "main", "index": 0 }]]
+    },
+    "Gerar processo (simulado)": {
+      "main": [[{ "node": "Montar memorando", "type": "main", "index": 0 }]]
+    },
+    "Montar memorando": {
+      "main": [[{ "node": "Gerar documento (simulado)", "type": "main", "index": 0 }]]
+    },
+    "Gerar documento (simulado)": {
+      "main": [[{ "node": "Registrar processo no Supabase", "type": "main", "index": 0 }]]
+    },
+    "Schedule Trigger1": {
+      "main": [[{ "node": "Buscar processos (Supabase)", "type": "main", "index": 0 }]]
+    },
+    "If1": {
+      "main": [
+        [{ "node": "Aviso de renovação (simulado)", "type": "main", "index": 0 }],
+        [{ "node": "No Operation, do nothing1", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "pinData": {}
+}
